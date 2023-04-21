@@ -1,0 +1,16 @@
+rootProject.name = 'nilou'
+
+include ':api'
+include ':testing'
+include ':processor:core'
+include ':processor:core-internal'
+include ':processor:jaxrs'
+include ':processor:spring'
+
+def setBuildFile(project) {
+    project.children.each {
+        setBuildFile(it)
+    }
+}
+
+setBuildFile(rootProject)

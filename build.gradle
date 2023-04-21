@@ -1,0 +1,25 @@
+plugins {
+    id 'java-library'
+}
+
+allprojects {
+    apply plugin: "java-library"
+    group 'net.orekyuu'
+    archivesBaseName 'nilou'
+    version '1.0-SNAPSHOT'
+    sourceCompatibility = JavaVersion.VERSION_17
+
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+        testImplementation 'com.google.testing.compile:compile-testing:0.21'
+        testImplementation("org.assertj:assertj-core:3.24.2")
+        // 以下を追加しないとjava.lang.NoClassDefFoundError: com/sun/source/util/TreeScannerがでてテストが落ちる
+        testImplementation files("${System.properties['java.home']}/../lib/tools.jar")
+    }
+
+    test {
+        useJUnitPlatform()
+        jvmArgs = ['--add-opens', 'jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED']
+    }
+}
