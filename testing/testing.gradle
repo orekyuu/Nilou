@@ -1,4 +1,10 @@
 dependencies {
     implementation project(":api")
     implementation project(":processor:core")
+
+    runtimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+    api 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    api 'org.assertj:assertj-core:3.24.2'
+    api files("${System.properties['java.home']}/../lib/tools.jar")
+    api 'com.google.testing.compile:compile-testing:0.19'
 }

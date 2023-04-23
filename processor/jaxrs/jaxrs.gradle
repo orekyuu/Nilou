@@ -1,4 +1,6 @@
 dependencies {
     implementation project(":api")
     implementation project(":processor:core")
+
+    testImplementation project(":testing")
 }

@@ -4,4 +4,6 @@ dependencies {
     implementation project(":processor:core")
     implementation project(":processor:spring")
     implementation project(":processor:jaxrs")
+
+    testImplementation project(":testing")
 }

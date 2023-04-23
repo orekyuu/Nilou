@@ -8,9 +8,11 @@ include ':processor:jaxrs'
 include ':processor:spring'
 
 def setBuildFile(project) {
+    project.buildFileName = "${project.name}.gradle"
     project.children.each {
         setBuildFile(it)
     }
 }
 
 setBuildFile(rootProject)
+rootProject.buildFileName = "build.gradle"
