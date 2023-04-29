@@ -1,4 +1,4 @@
-package test;
+package test.hoge;
 import net.orekyuu.nilou.UriBuilder;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

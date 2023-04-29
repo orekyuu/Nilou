@@ -10,4 +10,9 @@ public class JaxrsIntegrationTest extends AnnotationProcessorTesting {
   void testSimpleControllers() {
     compile("simpleControllers");
   }
+
+  @Test
+  void multiPackageControllers() {
+    compile("multiPackageControllers");
+  }
 }

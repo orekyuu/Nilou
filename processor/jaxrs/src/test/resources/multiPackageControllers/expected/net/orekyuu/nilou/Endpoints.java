@@ -12,7 +12,7 @@ public final class Endpoints {
         }
     }
 
-    public static final class HogeController {
+    public static final class hoge_HogeController {
         public static EndpointUriBuilder all() {
             List<PathSegment> segments = List.of(PathSegment.ofLiteral("hoge"));
             EndpointUriBuilder builder = new DefaultEndpointUriBuilder(segments);

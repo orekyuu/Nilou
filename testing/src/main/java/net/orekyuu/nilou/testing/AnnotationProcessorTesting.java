@@ -7,6 +7,7 @@ import net.orekyuu.nilou.UriBuilderAnnotationProcessor;
 import org.junit.jupiter.api.Assertions;
 
 import javax.tools.JavaFileObject;
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -38,8 +39,8 @@ public abstract class AnnotationProcessorTesting {
 
       List<JavaFileObject> expectedFiles = files(expectedDir);
       for (JavaFileObject expectedFile : expectedFiles) {
-        var relativePath = expectedDir.relativize(get(expectedFile.getName())).toString();
-        String className = relativePath.substring(0, relativePath.length() - ".java".length()).replace('/', '.');
+        var relativePath = expectedDir.relativize(new File(expectedFile.getName()).toPath()).toString();
+        String className = relativePath.substring(0, relativePath.length() - ".java".length()).replace(File.separatorChar, '.');
         subject.generatedSourceFile(className).hasSourceEquivalentTo(expectedFile);
       }
     } catch (URISyntaxException | IOException e) {
