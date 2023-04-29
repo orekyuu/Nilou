@@ -61,9 +61,20 @@ public class HandlerClassMethod implements GenerateCode, Comparable<HandlerClass
                 .returns(ClassName.get(EndpointUriBuilder.class))
                 .addCode(bodyBuilder.build())
                 .addParameters(parameters)
+                .addJavadoc(comment())
                 .build();
 
         typeSpec.addMethod(methodSpec);
+    }
+
+    private CodeBlock comment() {
+        CodeBlock.Builder builder = CodeBlock.builder();
+        for (String httpMethod : handlerMethod.httpMethod()) {
+            builder.add("$L $L <br>\n", httpMethod, handlerMethod.endpoint().rawPathString());
+        }
+        builder.add("\n");
+        builder.add("@see $T#$L", handlerMethod.handlerType(), handlerMethod.methodElement().getSimpleName());
+        return builder.build();
     }
 
     @Override
