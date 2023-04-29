@@ -1,20 +1,20 @@
 package net.orekyuu.nilou;
 
-sealed interface PathSegment{
+public sealed interface PathSegment{
 
   String raw();
 
   String pathPart();
 
-  static Literal ofLiteral(String value) {
+  public static Literal ofLiteral(String value) {
     return new Literal(value);
   }
 
-  static Variable ofVariable(String raw, String name) {
+  public static Variable ofVariable(String raw, String name) {
     return new Variable(raw, name);
   }
 
-  final class Literal implements PathSegment {
+  public final class Literal implements PathSegment {
 
     final String value;
 
@@ -33,7 +33,7 @@ sealed interface PathSegment{
     }
   }
 
-  final class Variable implements PathSegment {
+  public final class Variable implements PathSegment {
     final String raw;
     final String name;
     String value;

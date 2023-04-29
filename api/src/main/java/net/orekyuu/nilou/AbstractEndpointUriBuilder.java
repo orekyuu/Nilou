@@ -1,14 +1,10 @@
 package net.orekyuu.nilou;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class AbstractEndpointUriBuilder implements EndpointUriBuilder<AbstractEndpointUriBuilder> {
+public abstract class AbstractEndpointUriBuilder<T extends AbstractEndpointUriBuilder<T>> implements EndpointUriBuilder<T> {
 
   private final Map<String, List<String>> queryParams = new HashMap<>();
   private final URI base;
@@ -41,12 +37,13 @@ public abstract class AbstractEndpointUriBuilder implements EndpointUriBuilder<A
   }
 
   @Override
-  public AbstractEndpointUriBuilder self() {
-    return this;
+  @SuppressWarnings("unchecked cast")
+  public T self() {
+    return (T) this;
   }
 
   @Override
-  public AbstractEndpointUriBuilder pathParam(String name, String value) {
+  public T pathParam(String name, String value) {
     for (PathSegment pathSegment : pathSegments) {
       if (pathSegment instanceof PathSegment.Variable v) {
         v.value = value;
@@ -56,7 +53,7 @@ public abstract class AbstractEndpointUriBuilder implements EndpointUriBuilder<A
   }
 
   @Override
-  public AbstractEndpointUriBuilder queryParam(String name, String value) {
+  public T queryParam(String name, String value) {
     queryParams.compute(name, (key, val) -> {
       if (val == null) {
         return new ArrayList<>(List.of(value));
@@ -68,7 +65,7 @@ public abstract class AbstractEndpointUriBuilder implements EndpointUriBuilder<A
   }
 
   @Override
-  public AbstractEndpointUriBuilder queryParam(String name, String... values) {
+  public T queryParam(String name, String... values) {
     queryParams.compute(name, (key, val) -> {
       if (val == null) {
         return new ArrayList<>(Arrays.asList(values));
