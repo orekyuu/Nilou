@@ -9,6 +9,7 @@ import net.orekyuu.nilou.endpoint.HandlerMethod;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,13 +36,16 @@ public class Endpoints implements GenerateCode {
         Map<ClassName, ClassName> renamedMap = createRenamedMap();
 
         typeSpec.addModifiers(Modifier.PUBLIC, Modifier.FINAL);
-        endpoints.forEach((element, handlerMethods) -> {
-            ClassName className = renamedMap.get(ClassName.get(element));
-            typeSpec.addType(TypeSpec
-                    .classBuilder(className.canonicalName().replace('.', '_'))
-                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                    .build());
-        });
+        endpoints.entrySet().stream()
+                .sorted(Comparator.comparing(it -> it.getKey().getQualifiedName().toString()))
+                .forEachOrdered(it -> {
+                    TypeElement element = it.getKey();
+                    ClassName className = renamedMap.get(ClassName.get(element));
+                    typeSpec.addType(TypeSpec
+                            .classBuilder(className.canonicalName().replace('.', '_'))
+                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                            .build());
+                });
     }
 
     @Override
