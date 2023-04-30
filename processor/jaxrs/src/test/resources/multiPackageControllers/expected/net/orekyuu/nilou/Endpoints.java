@@ -6,7 +6,7 @@ import java.util.List;
 public final class Endpoints {
     public static final class FugaController {
         /**
-         * TODO /fuga <br>
+         * GET /fuga <br>
          *
          * @see test.FugaController#all
          */
@@ -20,7 +20,7 @@ public final class Endpoints {
 
     public static final class hoge_HogeController {
         /**
-         * TODO /hoge <br>
+         * GET /hoge <br>
          *
          * @see test.hoge.HogeController#all
          */
@@ -31,7 +31,7 @@ public final class Endpoints {
         }
 
         /**
-         * TODO /hoge/{id} <br>
+         * GET /hoge/{id} <br>
          *
          * @see test.hoge.HogeController#get
          */

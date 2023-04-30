@@ -2,20 +2,16 @@ package net.orekyuu.nilou;
 
 import com.squareup.javapoet.ClassName;
 import net.orekyuu.nilou.analyzed.*;
-import net.orekyuu.nilou.endpoint.Endpoint;
-import net.orekyuu.nilou.endpoint.HandlerAnalyzer;
-import net.orekyuu.nilou.endpoint.HandlerMethod;
+import net.orekyuu.nilou.endpoint.AnalyzedClassBaseHandlerAnalyzer;
 import net.orekyuu.nilou.endpoint.QueryParam;
-import net.orekyuu.nilou.parser.ClassParser;
 
-import javax.lang.model.element.TypeElement;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class JaxrsAnalyzer implements HandlerAnalyzer {
+public class JaxrsAnalyzer extends AnalyzedClassBaseHandlerAnalyzer {
 
 
     private static final Pattern pathVariablePattern = Pattern.compile("\\{(\\w+)(:\\w)?}");
@@ -23,29 +19,6 @@ public class JaxrsAnalyzer implements HandlerAnalyzer {
     private static final Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> GET_PATH_PARAM = getJaxrsAnnotation("PathVariable");
     private static final Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> GET_QUERY_PARAM = getJaxrsAnnotation("QueryParam");
     private static final Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> GET_NOT_NULL_VALIDATION = getValidationAnnotation("NotNull");
-
-    @Override
-    public List<HandlerMethod> analyze(TypeElement typeElement) {
-        List<AnalyzedClass> analyzedClasses = typeElement.accept(new ClassParser(), new ArrayList<>());
-        return analyzedClasses.stream()
-                .flatMap(this::toHandlerMethod)
-                .toList();
-    }
-
-    private Stream<HandlerMethod> toHandlerMethod(AnalyzedClass clazz) {
-        ArrayList<HandlerMethod> result = new ArrayList<>();
-        String[] topLevel = getPathPartString(clazz.annotations());
-        for (AnalyzedMethod method : clazz.methods()) {
-            Optional<AnalyzedAnnotation> methodLevel = GET_PATH.apply(method.annotations());
-            if (methodLevel.isEmpty()) {
-                continue;
-            }
-            List<PathSegment> segments = getPathPart(topLevel, method);
-            HandlerMethod handlerMethod = new HandlerMethod(List.of("TODO"), new Endpoint(segments, getQueryParams(method)), clazz.original(), method.original());
-            result.add(handlerMethod);
-        }
-        return result.stream();
-    }
 
     private static Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> getJaxrsAnnotation(String name) {
         return annotations -> Stream.of("javax.ws.rs", "jakarta.ws.rs")
@@ -63,19 +36,24 @@ public class JaxrsAnalyzer implements HandlerAnalyzer {
                 .findFirst();
     }
 
-    private String[] getPathPartString(AnalyzedAnnotations annotations) {
-        return GET_PATH.apply(annotations)
-                .flatMap(it -> it.getParam("value"))
-                .map(it -> it instanceof String str ? str.split("/") : new String[0])
-                .orElse(new String[0]);
+    @Override
+    protected boolean isHandlerMethod(AnalyzedMethod method) {
+        return GET_PATH.apply(method.annotations()).isPresent();
     }
 
+    @Override
+    protected List<PathSegment> getPathSegment(AnalyzedClass analyzedClass) {
+        return getPathSegment(analyzedClass.annotations());
+    }
 
+    @Override
+    protected List<PathSegment> getPathSegment(AnalyzedMethod analyzedMethod) {
+        return getPathSegment(analyzedMethod.annotations());
+    }
 
-    private List<PathSegment> getPathPart(String[] classLevelPathPart, AnalyzedMethod method) {
-
-        var parts = Stream.concat(Arrays.stream(classLevelPathPart), Arrays.stream(getPathPartString(method.annotations())));
-        return parts.map(it -> {
+    private List<PathSegment> getPathSegment(AnalyzedAnnotations annotations) {
+        String[] parts = getPathPartString(annotations);
+        return Arrays.stream(parts).map(it -> {
             Matcher matcher = pathVariablePattern.matcher(it);
             if (matcher.matches()) {
                 String name = matcher.group(1);
@@ -86,7 +64,15 @@ public class JaxrsAnalyzer implements HandlerAnalyzer {
         }).toList();
     }
 
-    private List<QueryParam> getQueryParams(AnalyzedMethod method) {
+    @Override
+    protected List<String> getHttpMethod(AnalyzedMethod method) {
+        return Stream.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "CONNECT", "TRACE", "PATCH", "HEAD")
+                .filter(it -> getJaxrsAnnotation(it).apply(method.annotations()).isPresent())
+                .toList();
+    }
+
+    @Override
+    protected List<QueryParam> getQueryParams(AnalyzedMethod method) {
         ArrayList<QueryParam> params = new ArrayList<>();
         for (AnalyzedArgument arg : method.arguments()) {
             AnalyzedAnnotation annotation = GET_QUERY_PARAM.apply(arg.annotations()).orElse(null);
@@ -98,5 +84,11 @@ public class JaxrsAnalyzer implements HandlerAnalyzer {
             params.add(new QueryParam(value, arg.fqn(), required));
         }
         return params;
+    }
+    private String[] getPathPartString(AnalyzedAnnotations annotations) {
+        return GET_PATH.apply(annotations)
+                .flatMap(it -> it.getParam("value"))
+                .map(it -> it instanceof String str ? str.split("/") : new String[0])
+                .orElse(new String[0]);
     }
 }
