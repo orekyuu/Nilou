@@ -19,9 +19,10 @@ public class JaxrsAnalyzer implements HandlerAnalyzer {
 
 
     private static final Pattern pathVariablePattern = Pattern.compile("\\{(\\w+)(:\\w)?}");
-    private static final Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> GET_PATH = getAnnotation("Path");
-    private static final Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> GET_PATH_PARAM = getAnnotation("PathVariable");
-    private static final Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> GET_QUERY_PARAM = getAnnotation("QueryParam");
+    private static final Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> GET_PATH = getJaxrsAnnotation("Path");
+    private static final Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> GET_PATH_PARAM = getJaxrsAnnotation("PathVariable");
+    private static final Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> GET_QUERY_PARAM = getJaxrsAnnotation("QueryParam");
+    private static final Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> GET_NOT_NULL_VALIDATION = getValidationAnnotation("NotNull");
 
     @Override
     public List<HandlerMethod> analyze(TypeElement typeElement) {
@@ -46,8 +47,16 @@ public class JaxrsAnalyzer implements HandlerAnalyzer {
         return result.stream();
     }
 
-    private static Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> getAnnotation(String name) {
+    private static Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> getJaxrsAnnotation(String name) {
         return annotations -> Stream.of("javax.ws.rs", "jakarta.ws.rs")
+                .map(it -> ClassName.get(it, name))
+                .map(it -> annotations.getAnnotation(it.canonicalName()).orElse(null))
+                .filter(Objects::nonNull)
+                .findFirst();
+    }
+
+    private static Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> getValidationAnnotation(String name) {
+        return annotations -> Stream.of("javax.validation.constraints", "jakarta.validation.constraints")
                 .map(it -> ClassName.get(it, name))
                 .map(it -> annotations.getAnnotation(it.canonicalName()).orElse(null))
                 .filter(Objects::nonNull)
@@ -80,12 +89,12 @@ public class JaxrsAnalyzer implements HandlerAnalyzer {
     private List<QueryParam> getQueryParams(AnalyzedMethod method) {
         ArrayList<QueryParam> params = new ArrayList<>();
         for (AnalyzedArgument arg : method.arguments()) {
-            AnalyzedAnnotation annotation = GET_PATH_PARAM.apply(method.annotations()).orElse(null);
+            AnalyzedAnnotation annotation = GET_QUERY_PARAM.apply(arg.annotations()).orElse(null);
             if (annotation == null) {
                 continue;
             }
             String value = ((String) annotation.getParam("value").orElse(arg.name()));
-            boolean required = false;
+            boolean required = GET_NOT_NULL_VALIDATION.apply(arg.annotations()).isPresent();
             params.add(new QueryParam(value, arg.fqn(), required));
         }
         return params;
