@@ -1,8 +1,8 @@
-package net.orekyuu.nilou;
+package net.orekyuu.nilou.analyzer;
 
 import com.squareup.javapoet.ClassName;
+import net.orekyuu.nilou.PathSegment;
 import net.orekyuu.nilou.analyzed.*;
-import net.orekyuu.nilou.endpoint.AnalyzedClassBaseHandlerAnalyzer;
 import net.orekyuu.nilou.endpoint.QueryParam;
 
 import java.util.*;

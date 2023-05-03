@@ -1,8 +1,11 @@
-package net.orekyuu.nilou.endpoint;
+package net.orekyuu.nilou.analyzer;
 
 import net.orekyuu.nilou.PathSegment;
 import net.orekyuu.nilou.analyzed.AnalyzedClass;
 import net.orekyuu.nilou.analyzed.AnalyzedMethod;
+import net.orekyuu.nilou.endpoint.Endpoint;
+import net.orekyuu.nilou.endpoint.HandlerMethod;
+import net.orekyuu.nilou.endpoint.QueryParam;
 import net.orekyuu.nilou.parser.ClassParser;
 
 import javax.lang.model.element.TypeElement;

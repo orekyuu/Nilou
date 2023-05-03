@@ -1,4 +1,4 @@
-package net.orekyuu.nilou.jaxrs;
+package net.orekyuu.nilou.integration;
 
 
 import net.orekyuu.nilou.testing.AnnotationProcessorTesting;
