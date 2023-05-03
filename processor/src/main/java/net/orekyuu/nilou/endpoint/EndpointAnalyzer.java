@@ -1,6 +1,7 @@
 package net.orekyuu.nilou.endpoint;
 
-import net.orekyuu.nilou.JaxrsAnalyzer;
+import net.orekyuu.nilou.analyzer.HandlerAnalyzer;
+import net.orekyuu.nilou.analyzer.JaxrsAnalyzer;
 
 import javax.lang.model.element.TypeElement;
 import java.util.List;
