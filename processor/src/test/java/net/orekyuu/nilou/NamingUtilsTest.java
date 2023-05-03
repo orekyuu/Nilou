@@ -26,6 +26,9 @@ class NamingUtilsTest {
 
         assertEquals(NamingUtils.shortClasNames(List.of("Hoge", "Fuga")),
                 List.of("Hoge", "Fuga"));
+
+        assertEquals(NamingUtils.shortClasNames(List.of("net.example.Hoge")),
+                List.of("Hoge"));
     }
 
 }

@@ -43,18 +43,19 @@ public class NamingUtils {
 
     public static List<String> shortClasNames(List<String> classNames) {
         List<String[]> strings = classNames.stream().map(it -> it.split("\\.")).toList();
-        int deps = 0;
-        while (true) {
-            int num = deps;
-            Long collect = strings.stream().map(it -> num < it.length ? it[num] : null).distinct().count();
+        int maxDeps = strings.stream().mapToInt(it -> it.length).max().orElse(0);
+        int diffPosition = maxDeps - 1;
+        for (int i = 0; i < maxDeps; i++) {
+            int num = i;
+            Long collect = strings.stream().map(it -> it[num]).distinct().count();
             if (collect.intValue() != 1) {
+                diffPosition = i;
                 break;
             }
-            deps++;
         }
-        int from = deps;
+        int num = diffPosition;
         return strings.stream()
-                .map(it -> Arrays.copyOfRange(it, from, it.length))
+                .map(it -> Arrays.copyOfRange(it, num, it.length))
                 .map(it -> String.join(".", it))
                 .toList();
     }

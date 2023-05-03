@@ -6,7 +6,7 @@ allprojects {
     apply plugin: "java-library"
     group 'net.orekyuu'
     archivesBaseName 'nilou'
-    version '1.0-SNAPSHOT'
+    version '0.0.1-SNAPSHOT'
     sourceCompatibility = JavaVersion.VERSION_17
 
     repositories {
