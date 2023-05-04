@@ -19,6 +19,7 @@ publishing {
       pom {
         name = archivesBaseName
         url = 'https://github.com/orekyuu/Nilou'
+        description = project.description
         licenses {
           license {
             name = 'MIT License'
