@@ -6,7 +6,7 @@ allprojects {
     apply plugin: "java-library"
     group 'net.orekyuu'
     archivesBaseName 'nilou'
-    version '0.0.2-SNAPSHOT'
+    version System.getenv("GITHUB_REF_NAME") ?: "0.0.2-SNAPSHOT"
     sourceCompatibility = JavaVersion.VERSION_17
 
     repositories {

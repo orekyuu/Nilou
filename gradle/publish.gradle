@@ -1,6 +1,15 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
+def isSnapshot = false
+if(version ==~ /^\d+\.\d+\.\d+$/) {
+  isSnapshot = false
+} else if (version ==~ /^\d+\.\d+\.\d+-SNAPSHOT$/) {
+  isSnapshot = true
+} else {
+  throw new RuntimeException("Invalid version pattern: $version")
+}
+
 publishing {
   publications {
     mavenJava(MavenPublication) {
@@ -29,4 +38,5 @@ javadoc {
   if (JavaVersion.current().isJava9Compatible()) {
     options.addBooleanOption('html5', true)
   }
+  options.addStringOption('Xdoclint:none')
 }
