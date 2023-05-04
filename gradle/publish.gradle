@@ -15,8 +15,31 @@ if(version ==~ /^\d+\.\d+\.\d+$/) {
 publishing {
   publications {
     mavenJava(MavenPublication) {
-      from components.java
       artifactId = archivesBaseName
+      pom {
+        name = archivesBaseName
+        url = 'https://github.com/orekyuu/Nilou'
+        description = project.description
+        licenses {
+          license {
+            name = 'MIT License'
+            url = 'https://opensource.org/license/mit/'
+          }
+        }
+        developers {
+          developer {
+            id = 'orekyuu'
+            name = 'Yutaro Kanagawa'
+            email = 'orekyuu@gmail.com'
+          }
+        }
+        scm {
+          connection = 'scm:git:git@github.com:orekyuu/Nilou.git'
+          developerConnection = 'scm:git:git@github.com:orekyuu/Nilou.git'
+          url = 'https://github.com/orekyuu/Nilou'
+        }
+      }
+      from components.java
     }
   }
   repositories {
@@ -45,4 +68,14 @@ javadoc {
     options.addBooleanOption('html5', true)
   }
   options.addStringOption('Xdoclint:none')
+}
+
+signing {
+  def keyId = System.getenv("SIGNING_KEY_ID")
+  def key = System.getenv("SIGNING_KEY")
+  if (keyId && key) {
+    def pass = System.getenv("SIGNING_PASS")
+    useInMemoryPgpKeys(keyId, key, pass)
+    sign publishing.publications.mavenJava
+  }
 }
