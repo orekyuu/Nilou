@@ -1,12 +1,2 @@
 archivesBaseName "nilou-api"
-
-apply plugin: 'maven-publish'
-
-publishing {
-  publications {
-    mavenJava(MavenPublication) {
-      from components.java
-      artifactId = 'nilou-api'
-    }
-  }
-}
+apply from: "$rootDir/gradle/publish.gradle"

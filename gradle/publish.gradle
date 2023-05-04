@@ -1,0 +1,48 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+def isSnapshot = false
+if(version ==~ /^\d+\.\d+\.\d+$/) {
+  isSnapshot = false
+} else if (version ==~ /^\d+\.\d+\.\d+-SNAPSHOT$/) {
+  isSnapshot = true
+} else {
+  if ((System.getenv("IS_RELEASE") ?: "").equalsIgnoreCase("true")) {
+    throw new RuntimeException("Invalid version pattern: $version")
+  }
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+      artifactId = archivesBaseName
+    }
+  }
+  repositories {
+    maven {
+      name = "OSSRH"
+      if (isSnapshot) {
+        url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+      } else {
+        url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+      }
+      credentials {
+        username = System.getenv("MAVEN_USERNAME")
+        password = System.getenv("MAVEN_PASSWORD")
+      }
+    }
+  }
+}
+
+java {
+  withJavadocJar()
+  withSourcesJar()
+}
+
+javadoc {
+  if (JavaVersion.current().isJava9Compatible()) {
+    options.addBooleanOption('html5', true)
+  }
+  options.addStringOption('Xdoclint:none')
+}
