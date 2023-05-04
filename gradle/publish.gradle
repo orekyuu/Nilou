@@ -1,0 +1,32 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+      artifactId = archivesBaseName
+    }
+  }
+  repositories {
+    maven {
+      name = "OSSRH"
+      url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+      credentials {
+        username = System.getenv("MAVEN_USERNAME")
+        password = System.getenv("MAVEN_PASSWORD")
+      }
+    }
+  }
+}
+
+java {
+  withJavadocJar()
+  withSourcesJar()
+}
+
+javadoc {
+  if (JavaVersion.current().isJava9Compatible()) {
+    options.addBooleanOption('html5', true)
+  }
+}
