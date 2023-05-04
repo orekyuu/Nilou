@@ -7,7 +7,9 @@ if(version ==~ /^\d+\.\d+\.\d+$/) {
 } else if (version ==~ /^\d+\.\d+\.\d+-SNAPSHOT$/) {
   isSnapshot = true
 } else {
-  throw new RuntimeException("Invalid version pattern: $version")
+  if ((System.getenv("IS_RELEASE") ?: "").equalsIgnoreCase("true")) {
+    throw new RuntimeException("Invalid version pattern: $version")
+  }
 }
 
 publishing {
@@ -20,7 +22,11 @@ publishing {
   repositories {
     maven {
       name = "OSSRH"
-      url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+      if (isSnapshot) {
+        url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+      } else {
+        url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+      }
       credentials {
         username = System.getenv("MAVEN_USERNAME")
         password = System.getenv("MAVEN_PASSWORD")
