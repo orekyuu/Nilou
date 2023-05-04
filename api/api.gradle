@@ -1,2 +1,3 @@
 archivesBaseName "nilou-api"
+description "Reverse router library."
 apply from: "$rootDir/gradle/publish.gradle"

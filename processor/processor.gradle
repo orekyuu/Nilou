@@ -1,4 +1,5 @@
 archivesBaseName 'nilou-annotation-processor'
+description "Annotation processor for nilou."
 apply from: "$rootDir/gradle/publish.gradle"
 
 dependencies {

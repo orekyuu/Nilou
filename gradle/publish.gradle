@@ -15,8 +15,30 @@ if(version ==~ /^\d+\.\d+\.\d+$/) {
 publishing {
   publications {
     mavenJava(MavenPublication) {
-      from components.java
       artifactId = archivesBaseName
+      pom {
+        name = archivesBaseName
+        url = 'https://github.com/orekyuu/Nilou'
+        licenses {
+          license {
+            name = 'MIT License'
+            url = 'https://opensource.org/license/mit/'
+          }
+        }
+        developers {
+          developer {
+            id = 'orekyuu'
+            name = 'Yutaro Kanagawa'
+            email = 'orekyuu@gmail.com'
+          }
+        }
+        scm {
+          connection = 'scm:git:git@github.com:orekyuu/Nilou.git'
+          developerConnection = 'scm:git:git@github.com:orekyuu/Nilou.git'
+          url = 'https://github.com/orekyuu/Nilou'
+        }
+      }
+      from components.java
     }
   }
   repositories {
