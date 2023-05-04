@@ -6,6 +6,11 @@ NilouはJava17以上のWebアプリケーション向けのリバースルータ
 - PathVariableやNotNullなQueryParameterのような必須パラメータは組み立ての最初に要求されるため、漏れが発生しません
 - 実行時にはNilou以外のライブラリへの依存がありません
 
+## 動作環境
+| ライブラリのバージョン | 要求Javaバージョン | jakarta eeサポート | java eeサポート | spring mvcサポート |
+|---|---|:---:|:---:|:---:|
+| 0.0.3 〜 | 17 | o | o | x|
+
 ## 例
 JAX-RSを利用する場合、`@UriBuilder`をControllerに宣言します
 ### コード例
@@ -87,4 +92,15 @@ Uri fugaAllUri = Endpoints.FugaController
     .queryParameter("page", "1")
     .queryParameter("per", "20")
     .toUri();
+```
+
+## Setup
+```build.gradle
+// 生成したコードをIDEから参照できるようにする
+sourceSets.main.java.srcDirs += "${buildDir}/generated/sources/annotationProcessor/java/main"
+
+dependencies {
+  implementation 'net.orekyuu:nilou-api:0.0.3'
+  annotationProcessor 'net.orekyuu:nilou-annotation-processor:0.0.3'
+}
 ```
