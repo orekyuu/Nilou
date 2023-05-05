@@ -8,6 +8,8 @@ public interface EndpointUriBuilder<T extends EndpointUriBuilder<T>> {
 
   T self();
 
+  T baseUri(URI base);
+
   T pathParam(String name, String value);
 
   T queryParam(String name, String value);

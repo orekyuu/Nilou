@@ -27,4 +27,9 @@ allprojects {
     javadoc {
         options.addStringOption('Xdoclint:none')
     }
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            options.encoding = 'UTF-8'
+        }
+    }
 }
