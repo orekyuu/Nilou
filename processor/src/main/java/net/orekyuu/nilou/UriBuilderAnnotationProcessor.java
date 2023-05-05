@@ -6,6 +6,7 @@ import net.orekyuu.nilou.reverserouter.Endpoints;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class UriBuilderAnnotationProcessor extends AbstractProcessor {
       }
     }
 
-    if (roundEnv.getRootElements().isEmpty()) {
+    if (roundEnv.processingOver()) {
       try {
         endpoints.endpointsFile().writeTo(processingEnv.getFiler());
       } catch (IOException e) {
@@ -37,6 +38,11 @@ public class UriBuilderAnnotationProcessor extends AbstractProcessor {
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
-    return Set.of("*");
+    return Set.of(UriBuilder.class.getCanonicalName());
+  }
+
+  @Override
+  public SourceVersion getSupportedSourceVersion() {
+    return SourceVersion.RELEASE_17;
   }
 }
