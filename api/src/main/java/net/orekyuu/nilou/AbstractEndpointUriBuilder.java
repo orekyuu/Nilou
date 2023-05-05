@@ -6,8 +6,9 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractEndpointUriBuilder<T extends AbstractEndpointUriBuilder<T>> implements EndpointUriBuilder<T> {
 
-  private final Map<String, List<String>> queryParams = new HashMap<>();
-  private final URI base;
+  // Note: query paramの順序保持のためにLinkedHashMapを利用する
+  private final Map<String, List<String>> queryParams = new LinkedHashMap<>();
+  private URI base;
   private final List<PathSegment> pathSegments;
 
   protected AbstractEndpointUriBuilder(List<PathSegment> pathSegments) {
@@ -20,6 +21,12 @@ public abstract class AbstractEndpointUriBuilder<T extends AbstractEndpointUriBu
   }
 
   @Override
+  public T baseUri(URI base) {
+    this.base = base;
+    return self();
+  }
+
+  @Override
   public URI toUri() {
     StringBuilder builder = new StringBuilder(base.toString());
     if (!base.toString().endsWith("/")) {
@@ -28,10 +35,12 @@ public abstract class AbstractEndpointUriBuilder<T extends AbstractEndpointUriBu
     String pathPart = pathSegments.stream().map(PathSegment::pathPart).collect(Collectors.joining("/"));
     builder.append(pathPart);
 
-    String queryPart = queryParams.entrySet().stream()
-            .flatMap(keyValue -> keyValue.getValue().stream().map(v -> keyValue.getKey() + "=" + v))
-            .collect(Collectors.joining("&", "?", ""));
-    builder.append(queryPart);
+    if (!queryParams.isEmpty()) {
+      String queryPart = queryParams.entrySet().stream()
+              .flatMap(keyValue -> keyValue.getValue().stream().map(v -> keyValue.getKey() + "=" + v))
+              .collect(Collectors.joining("&", "?", ""));
+      builder.append(queryPart);
+    }
 
     return URI.create(builder.toString());
   }
@@ -44,10 +53,16 @@ public abstract class AbstractEndpointUriBuilder<T extends AbstractEndpointUriBu
 
   @Override
   public T pathParam(String name, String value) {
+    boolean updated = false;
     for (PathSegment pathSegment : pathSegments) {
-      if (pathSegment instanceof PathSegment.Variable v) {
+      if (pathSegment instanceof PathSegment.Variable v && Objects.equals(v.name, name)) {
         v.value = value;
+        updated = true;
       }
+    }
+
+    if (!updated) {
+      throw new IllegalArgumentException("PathParam not found: " + name);
     }
     return self();
   }
