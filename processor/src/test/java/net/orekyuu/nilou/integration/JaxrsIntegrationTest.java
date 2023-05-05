@@ -20,4 +20,9 @@ public class JaxrsIntegrationTest extends AnnotationProcessorTesting {
   void exampleControllers() {
     compile("exampleControllers");
   }
+
+  @Test
+  void withLombok() {
+    compileWithLombok("withLombok");
+  }
 }
