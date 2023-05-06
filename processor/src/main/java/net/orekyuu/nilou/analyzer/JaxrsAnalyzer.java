@@ -14,6 +14,23 @@ import java.util.stream.Stream;
 public class JaxrsAnalyzer extends AnalyzedClassBaseHandlerAnalyzer {
 
 
+    enum HttpMethod {
+        GET,
+        POST,
+        PUT,
+        PATCH,
+        DELETE,
+        HEAD,
+        OPTIONS;
+
+        public Optional<AnalyzedAnnotation> getAnnotation(AnalyzedAnnotations annotations) {
+            return getJaxrsAnnotation(name()).apply(annotations);
+        }
+
+        public static boolean hasMethodAnnotation(AnalyzedAnnotations annotations) {
+            return Arrays.stream(values()).anyMatch(it -> it.getAnnotation(annotations).isPresent());
+        }
+    }
     private static final Pattern pathVariablePattern = Pattern.compile("\\{(\\w+)(:\\w)?}");
     private static final Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> GET_PATH = getJaxrsAnnotation("Path");
     private static final Function<AnalyzedAnnotations, Optional<AnalyzedAnnotation>> GET_PATH_PARAM = getJaxrsAnnotation("PathVariable");
@@ -38,7 +55,7 @@ public class JaxrsAnalyzer extends AnalyzedClassBaseHandlerAnalyzer {
 
     @Override
     protected boolean isHandlerMethod(AnalyzedMethod method) {
-        return GET_PATH.apply(method.annotations()).isPresent();
+        return GET_PATH.apply(method.annotations()).isPresent() || HttpMethod.hasMethodAnnotation(method.annotations());
     }
 
     @Override

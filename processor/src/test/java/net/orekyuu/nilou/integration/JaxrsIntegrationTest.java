@@ -25,4 +25,14 @@ public class JaxrsIntegrationTest extends AnnotationProcessorTesting {
   void withLombok() {
     compileWithLombok("withLombok");
   }
+
+  @Test
+  void methodOnly() {
+    compileWithLombok("methodOnly");
+  }
+
+  @Test
+  void notNull() {
+    compileWithLombok("notNull");
+  }
 }
